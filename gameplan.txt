@@ -1,0 +1,6 @@
+Data Cleaning
+- Reduce Troll Tweets to 700k (randomly selected) + process to correct format
+- Process all Election Day + Australian Election + Democrat vs. Republican Tweets to correct format
+
+Format Required By BERT: guid, label, alpha, text
+

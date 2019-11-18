@@ -1,0 +1,8 @@
+Classifying Tweets with BERT
+- Use BERT to classify whether a tweet is from a Russian Troll Bot or not
+- Datasets: 
+	- troll tweets: fivethirtyeight has a dataset of 3 million russian troll tweets
+	- non-troll tweets: australian election tweets + democrat vs. republican tweets + election day 2016 tweets
+- Deliverables:
+	- One trained BERT model
+	- One live demo (ability to input a tweet, query the model, and output the result)
