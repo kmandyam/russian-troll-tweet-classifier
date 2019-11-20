@@ -10,6 +10,7 @@ def assign_label(row):
 
 
 df['label'] = df.apply(lambda row: assign_label(row), axis=1)
+df.columns = ['tweet', 'label']
 df.to_csv("data/cleaned/dem_rep_tweets.csv", index=False)
 
 
