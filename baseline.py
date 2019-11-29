@@ -1,51 +1,55 @@
+import time
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 
+train_df = pd.read_csv("data/data_splits/train.csv")
+val_df = pd.read_csv("data/data_splits/validation.csv")
+test_df = pd.read_csv("data/data_splits/test.csv")
 
-troll_csv = "data/cleaned/troll_tweets.csv"
-dem_rep_csv = "data/cleaned/dem_rep_tweets.csv"
-elec_day_csv = "data/cleaned/election_day_tweets.csv"
-aus_elec_csv = "data/cleaned/aus_election_tweets.csv"
+dfs = [train_df, val_df, test_df]
 
+for df in dfs:
+    df['tweet'] = df['tweet'].astype('str')
+    df['label'] = df['label'].astype('str')
 
-troll_df = pd.read_csv(troll_csv)
-dem_rep_df = pd.read_csv(dem_rep_csv)
-elec_day_df = pd.read_csv(elec_day_csv)
-aus_elec_df = pd.read_csv(aus_elec_csv)
+total_df = pd.concat(dfs)
 
-print("troll tweets: ", len(troll_df))
-print("dem rep tweets: ", len(dem_rep_df))
-print("elec day tweets: ", len(elec_day_df))
-print("aus elec tweets: ", len(aus_elec_df))
+print("unique labels: ", total_df['label'].unique())
+assert len(total_df['label'].unique()) == 2
 
-troll_df = troll_df.sample(n=10000)
-# dem_rep_df = dem_rep_df.sample(n=10000)
-#
-# df = pd.concat([troll_df, dem_rep_df])
-# df['tweet'] = df['tweet'].astype('str')
-# df['label'] = df['label'].astype('str')
-#
-# tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2',
-#                         encoding='latin-1', ngram_range=(1, 2),
-#                         stop_words='english')
-#
-# features = tfidf.fit_transform(df.tweet).toarray()
-# labels = df.label
-# print(features.shape)
-#
-# X_train, X_test, y_train, y_test = train_test_split(df['tweet'], df['label'], random_state=0)
-# count_vect = CountVectorizer()
-# X_train_counts = count_vect.fit_transform(X_train)
-# tfidf_transformer = TfidfTransformer()
-# X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
-# clf = MultinomialNB().fit(X_train_tfidf, y_train)
-#
-# X_test_counts = count_vect.transform(X_test)
-# y_pred = clf.predict(X_test_counts)
-#
-# print(metrics.classification_report(y_test, y_pred, target_names=df['label'].unique()))
+print("all data used: ", len(total_df))
+
+X_train = train_df['tweet']
+X_test = test_df['tweet']
+
+y_train = train_df['label']
+y_test = test_df['label']
+
+print("Train Size: ", len(X_train))
+print("Test Size: ", len(X_test))
+
+start_time = time.time()
+tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2',
+                        encoding='latin-1', ngram_range=(1, 2),
+                        stop_words='english')
+
+features = tfidf.fit_transform(total_df.tweet).toarray()
+labels = total_df.label
+print(features.shape)
+
+count_vect = CountVectorizer()
+X_train_counts = count_vect.fit_transform(X_train)
+tfidf_transformer = TfidfTransformer()
+X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
+clf = LogisticRegression(random_state=0).fit(X_train_tfidf, y_train)
+print("--- %s seconds ---" % (time.time() - start_time))
+X_test_counts = count_vect.transform(X_test)
+y_pred = clf.predict(X_test_counts)
+
+print(metrics.classification_report(y_test, y_pred, target_names=total_df['label'].unique()))
