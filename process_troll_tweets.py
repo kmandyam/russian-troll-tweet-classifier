@@ -9,7 +9,7 @@ for filename in os.listdir(directory):
         print("processing " + os.path.join(directory, filename))
         df = pd.read_csv(os.path.join(directory, filename))
         df = df[df.language == 'English']
-        sample_size = min(53845, df.shape[0])
+        sample_size = min(50000, df.shape[0])
         df = df.sample(sample_size)
         frames.append(df)
 
