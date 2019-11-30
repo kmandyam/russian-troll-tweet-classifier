@@ -1,3 +1,4 @@
 *.idea
-data/*
+data/cleaned
+data/raw
 *DS_Store
